@@ -17,16 +17,6 @@ const (
 	RedfishPowerStateOFF RedfishPowerStateType = 2
 )
 
-func WithRedfishPowerStateMetric(state RedfishPowerStateType, labels prometheus.Labels) Metric {
-	metric := &GaugeMetric{
-		ID: RedfishPowerState,
-		Gauge: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: string(RedfishPowerState),
-			Help: "Indicates the power state of the system. 1 = ON, 2 = OFF.",
-		}, RedfishPowerStateLabels).With(labels),
-	}
-
-	metric.Set(float64(state))
-
-	return metric
+func (b *Metrics) WithRedfishPowerStateMetric(state RedfishPowerStateType, labels prometheus.Labels) {
+	b.SetGauge(RedfishPowerState, labels, float64(state))
 }
