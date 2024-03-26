@@ -32,7 +32,7 @@ func (c *Config) reload() {
 	if err != nil {
 		log.Fatalf("Unable to parse config file: %v", err)
 	}
-	log.Println("Config file reloaded")
+	log.Printf("Loaded config file %q successfully.", configPath)
 }
 
 // GetConfig Returns the current config instance.
