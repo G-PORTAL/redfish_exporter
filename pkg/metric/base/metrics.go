@@ -1,8 +1,6 @@
 package base
 
 import (
-	"log"
-
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -24,10 +22,7 @@ func (b *Metrics) With(metrics ...Metric) {
 
 func (b *Metrics) Registry() *prometheus.Registry {
 	registry := prometheus.NewRegistry()
-	for id, collector := range b.metrics {
-		log.Printf("Registering metric %s\n", id)
-
-		// debug log?
+	for _, collector := range b.metrics {
 		registry.MustRegister(collector)
 	}
 

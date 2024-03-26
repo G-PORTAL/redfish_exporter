@@ -15,7 +15,6 @@ RUN rm -rf /opt/app-root/src/*
 
 EXPOSE 9096
 
-RUN /usr/bin/fix-permissions ${APP_ROOT} && \
-    /usr/bin/fix-permissions /data/
+RUN /usr/bin/fix-permissions ${APP_ROOT}
 
 CMD ["/opt/app-root/redfish_exporter"]

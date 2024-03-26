@@ -20,7 +20,6 @@ func Handle(ctx *gin.Context) {
 		return
 	}
 
-	log.Println("finished with handling")
 	defer func() {
 		err := client.Disconnect()
 		if err != nil {
