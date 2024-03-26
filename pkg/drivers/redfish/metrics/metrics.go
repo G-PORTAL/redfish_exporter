@@ -92,8 +92,8 @@ func (m *Metrics) Collect() error {
 		if cpus, err := system.Processors(); err == nil {
 			for _, cpu := range cpus {
 				m.WithRedfishProcessorHealthMetric(convertHealthStatus(cpu.Status.Health), map[string]string{
-					"system_id": system.ID,
-					"cpu_id":    cpu.ID,
+					"system_id":    system.ID,
+					"processor_id": cpu.ID,
 				})
 			}
 		} else {
