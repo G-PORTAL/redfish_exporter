@@ -18,16 +18,6 @@ const (
 	RedfishHealthCritical RedfishHealthStatus = 3
 )
 
-func WithRedfishHealthMetric(health RedfishHealthStatus, labels prometheus.Labels) Metric {
-	metric := &GaugeMetric{
-		ID: RedfishHealth,
-		Gauge: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: string(RedfishHealth),
-			Help: "Indicates the health status of the system. 1 = OK, 2 = Warning, 3 = Critical.",
-		}, RedfishHealthLabels).With(labels),
-	}
-
-	metric.Set(float64(health))
-
-	return metric
+func (b *Metrics) WithRedfishHealthMetric(health RedfishHealthStatus, labels prometheus.Labels) {
+	b.SetGauge(RedfishHealth, labels, float64(health))
 }

@@ -10,6 +10,12 @@ import (
 	"github.com/stmcginnis/gofish/redfish"
 )
 
+const (
+	Byte = 1
+	KiB  = 1024 * Byte
+	MiB  = 1024 * KiB
+)
+
 type Metrics struct {
 	base.Metrics
 
@@ -18,7 +24,8 @@ type Metrics struct {
 
 func NewMetrics(gofish *gofish.APIClient) *Metrics {
 	return &Metrics{
-		api: gofish,
+		api:     gofish,
+		Metrics: base.NewMetrics(),
 	}
 }
 
@@ -31,18 +38,24 @@ func (m *Metrics) Collect() error {
 	}
 
 	for _, system := range systems {
-		m.With(base.WithRedfishHealthMetric(convertHealthStatus(system.Status.Health), map[string]string{
+		m.WithRedfishHealthMetric(convertHealthStatus(system.Status.Health), map[string]string{
 			"system_id": system.ID,
-		}), base.WithRedfishPowerStateMetric(convertPowerState(system.PowerState), map[string]string{
+		})
+
+		m.WithRedfishPowerStateMetric(convertPowerState(system.PowerState), map[string]string{
 			"system_id": system.ID,
-		}))
+		})
 
 		if memory, err := system.Memory(); err == nil {
 			for _, mem := range memory {
-				m.With(base.WithRedfishMemoryHealthMetric(convertHealthStatus(mem.Status.Health), map[string]string{
+				m.WithRedfishMemoryHealthMetric(convertHealthStatus(mem.Status.Health), map[string]string{
 					"system_id": system.ID,
 					"memory_id": mem.ID,
-				}))
+				})
+				m.WithRedfishMemoryCapacityMetric(mem.CapacityMiB, map[string]string{
+					"system_id": system.ID,
+					"memory_id": mem.ID,
+				})
 			}
 		} else {
 			log.Printf("error getting memory: %s", err)
@@ -50,18 +63,23 @@ func (m *Metrics) Collect() error {
 
 		if storage, err := system.Storage(); err == nil {
 			for _, store := range storage {
-				m.With(base.WithRedfishStorageHealthMetric(convertHealthStatus(store.Status.Health), map[string]string{
+				m.WithRedfishStorageHealthMetric(convertHealthStatus(store.Status.Health), map[string]string{
 					"system_id":  system.ID,
 					"storage_id": store.ID,
-				}))
+				})
 
 				if drives, err := store.Drives(); err == nil {
 					for _, drive := range drives {
-						m.With(base.WithRedfishDriveHealthMetric(convertHealthStatus(drive.Status.Health), map[string]string{
+						m.WithRedfishDriveHealthMetric(convertHealthStatus(drive.Status.Health), map[string]string{
 							"system_id":  system.ID,
 							"storage_id": store.ID,
 							"drive_id":   drive.ID,
-						}))
+						})
+						m.WithRedfishDriveCapacityMetric(float64(drive.CapacityBytes)/MiB, map[string]string{
+							"system_id":  system.ID,
+							"storage_id": store.ID,
+							"drive_id":   drive.ID,
+						})
 					}
 				} else {
 					log.Printf("error getting drives: %s", err)
@@ -73,20 +91,20 @@ func (m *Metrics) Collect() error {
 
 		if cpus, err := system.Processors(); err == nil {
 			for _, cpu := range cpus {
-				m.With(base.WithRedfishProcessorHealthMetric(convertHealthStatus(cpu.Status.Health), map[string]string{
+				m.WithRedfishProcessorHealthMetric(convertHealthStatus(cpu.Status.Health), map[string]string{
 					"system_id": system.ID,
 					"cpu_id":    cpu.ID,
-				}))
+				})
 			}
 		} else {
 			log.Printf("error getting processors: %s", err)
 		}
 
 		if system.BIOSVersion != "" {
-			m.With(base.WithRedfishBiosVersionMetric(map[string]string{
+			m.WithRedfishBiosVersionMetric(map[string]string{
 				"system_id": system.ID,
 				"version":   system.BIOSVersion,
-			}))
+			})
 		}
 	}
 
