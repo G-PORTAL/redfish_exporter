@@ -19,5 +19,8 @@ jobs:
         run: go mod download
       - name: Linting code
         uses: golangci/golangci-lint-action@v4
+        with:
+          skip-pkg-cache: true
+          skip-build-cache: true
       - name: Running tests
         run: go test ./...
