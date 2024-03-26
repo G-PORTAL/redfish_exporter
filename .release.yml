@@ -1,0 +1,12 @@
+commitFormat: angular
+branch:
+  main: release
+release: 'github'
+github:
+  repo: "go-semantic-release"
+  user: "g-portal"
+hooks:
+  preRelease:
+    - name: echo $RELEASE_VERSION
+  postRelease:
+    - name: echo $RELEASE_VERSION

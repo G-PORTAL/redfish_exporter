@@ -1,0 +1,16 @@
+---
+
+run:
+  tests: true
+
+linters:
+  enable-all: true
+  disable:
+    - gochecknoglobals
+    - ireturn
+    - depguard
+    - exhaustivestruct
+    - exhaustruct
+    - exhaustive
+    - wsl
+    - gochecknoinits
