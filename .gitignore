@@ -1,6 +1,5 @@
 # Ignore example config
-config.example.yml
-config.internal.yml
+config.yml
 .idea
 
 # Distribution directory

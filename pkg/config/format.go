@@ -1,6 +1,8 @@
 package config
 
 type Config struct {
+	Verbose bool `yaml:"verbose"`
+
 	Redfish struct {
 		// Username Default username for collecting metrics
 		Username string `yaml:"username"`
