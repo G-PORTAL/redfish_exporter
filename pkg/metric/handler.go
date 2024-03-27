@@ -13,7 +13,7 @@ import (
 func Handle(ctx *gin.Context) {
 	params := extractCollectorParams(ctx.Request)
 
-	client, err := api.NewClient(params.Host, params.Username, params.Password, false)
+	client, err := api.NewClient(params.Host, params.Username, params.Password, params.VerifyTLS)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
@@ -40,17 +40,19 @@ func Handle(ctx *gin.Context) {
 }
 
 type collectorParams struct {
-	Username string
-	Password string
-	Host     string
+	Username  string
+	Password  string
+	Host      string
+	VerifyTLS bool
 }
 
 func extractCollectorParams(req *http.Request) collectorParams {
 	cfg := config.GetConfig()
 	params := collectorParams{
-		Host:     "",
-		Username: cfg.Redfish.Username,
-		Password: cfg.Redfish.Password,
+		Host:      "",
+		Username:  cfg.Redfish.Username,
+		Password:  cfg.Redfish.Password,
+		VerifyTLS: cfg.Redfish.VerifyTLS,
 	}
 	if host := req.URL.Query().Get("host"); host != "" {
 		params.Host = host
@@ -60,6 +62,12 @@ func extractCollectorParams(req *http.Request) collectorParams {
 	}
 	if password := req.URL.Query().Get("password"); password != "" {
 		params.Password = password
+	}
+
+	if verifyTLS := req.URL.Query().Get("verify_tls"); verifyTLS == "true" {
+		params.VerifyTLS = true
+	} else if verifyTLS == "false" {
+		params.VerifyTLS = false
 	}
 
 	return params

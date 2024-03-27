@@ -18,3 +18,8 @@ linters:
     - gocognit
     - cyclop
     - forbidigo
+    - nosnakecase
+linters-settings:
+  gosec:
+    excludes:
+      - G402 # We allow InsecureSkipVerify in our code
