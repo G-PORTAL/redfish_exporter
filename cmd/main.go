@@ -6,6 +6,7 @@ import (
 
 	"github.com/g-portal/redfish_exporter/pkg/config"
 	"github.com/g-portal/redfish_exporter/pkg/metric"
+	"github.com/g-portal/redfish_exporter/pkg/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,11 +32,18 @@ func init() {
 }
 
 func main() {
-	r := gin.Default()
+	if conf := config.GetConfig(); !conf.Verbose {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
-	r.GET("/metrics", metric.Handle)
+	server := gin.New()
+	server.Use(gin.Recovery())
+	server.Use(middleware.ErrorLogger)
+	server.Use(gin.Logger())
+
+	server.GET("/metrics", metric.Handle)
 	log.Println("Starting listening on: " + listenAddr)
-	if err := r.Run(listenAddr); err != nil {
+	if err := server.Run(listenAddr); err != nil {
 		log.Printf("Error starting http server: %v", err)
 	}
 }
