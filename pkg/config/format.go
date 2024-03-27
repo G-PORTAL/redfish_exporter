@@ -9,5 +9,8 @@ type Config struct {
 
 		// Password Default password for collecting metrics
 		Password string `yaml:"password"`
+
+		// Verify Whether to verify the TLS certificate
+		VerifyTLS bool `yaml:"verifyTls"`
 	} `yaml:"redfish"`
 }

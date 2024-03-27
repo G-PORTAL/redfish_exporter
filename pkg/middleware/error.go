@@ -33,6 +33,6 @@ func ErrorLogger(c *gin.Context) {
 	if writer.Status() != http.StatusOK {
 		// GIN logger format: 2024/03/27 - 13:54:44
 		now := time.Now().Format("2006/01/02 - 15:04:05")
-		fmt.Printf("[GIN] %s | %s", now, writer.body.String())
+		fmt.Printf("[GIN] %s | %s\n", now, writer.body.String())
 	}
 }
