@@ -5,8 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
+	"github.com/g-portal/redfish_exporter/pkg/config"
 	"github.com/g-portal/redfish_exporter/pkg/drivers/redfish/metrics"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stmcginnis/gofish"
@@ -75,6 +77,10 @@ func (rf *Redfish) Connect(host, username, password string, verifyTLS bool) erro
 		Insecure:            !verifyTLS,
 		TLSHandshakeTimeout: int(Timeout.Seconds()),
 		HTTPClient:          httpClient,
+	}
+
+	if verbose := config.GetConfig().Verbose; verbose {
+		cfg.DumpWriter = os.Stdout
 	}
 
 	rf.client, err = gofish.Connect(cfg)
