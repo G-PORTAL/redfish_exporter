@@ -38,7 +38,7 @@ func (m *Metrics) Collect() error {
 	}
 
 	for _, system := range systems {
-		m.WithRedfishHealthMetric(convertHealthStatus(system.Status.Health), map[string]string{
+		m.WithRedfishHealthMetric(convertHealthStatus(system.Status.Health, false), map[string]string{
 			"system_id": system.ID,
 		})
 
@@ -48,7 +48,8 @@ func (m *Metrics) Collect() error {
 
 		if memory, err := system.Memory(); err == nil {
 			for _, mem := range memory {
-				m.WithRedfishMemoryHealthMetric(convertHealthStatus(mem.Status.Health), map[string]string{
+				m.WithRedfishMemoryHealthMetric(convertHealthStatus(mem.Status.Health,
+					mem.Status.State == common.EnabledState), map[string]string{
 					"system_id": system.ID,
 					"memory_id": mem.ID,
 				})
@@ -63,14 +64,16 @@ func (m *Metrics) Collect() error {
 
 		if storage, err := system.Storage(); err == nil {
 			for _, store := range storage {
-				m.WithRedfishStorageHealthMetric(convertHealthStatus(store.Status.Health), map[string]string{
+				m.WithRedfishStorageHealthMetric(convertHealthStatus(store.Status.Health,
+					store.Status.State == common.EnabledState), map[string]string{
 					"system_id":  system.ID,
 					"storage_id": store.ID,
 				})
 
 				if drives, err := store.Drives(); err == nil {
 					for _, drive := range drives {
-						m.WithRedfishDriveHealthMetric(convertHealthStatus(drive.Status.Health), map[string]string{
+						m.WithRedfishDriveHealthMetric(convertHealthStatus(drive.Status.Health,
+							drive.FailurePredicted), map[string]string{
 							"system_id":  system.ID,
 							"storage_id": store.ID,
 							"drive_id":   drive.ID,
@@ -91,7 +94,8 @@ func (m *Metrics) Collect() error {
 
 		if cpus, err := system.Processors(); err == nil {
 			for _, cpu := range cpus {
-				m.WithRedfishProcessorHealthMetric(convertHealthStatus(cpu.Status.Health), map[string]string{
+				m.WithRedfishProcessorHealthMetric(convertHealthStatus(cpu.Status.Health,
+					cpu.Status.State == common.EnabledState), map[string]string{
 					"system_id":    system.ID,
 					"processor_id": cpu.ID,
 				})
@@ -111,7 +115,7 @@ func (m *Metrics) Collect() error {
 	return nil
 }
 
-func convertHealthStatus(status common.Health) base.RedfishHealthStatus {
+func convertHealthStatus(status common.Health, forceWarning bool) base.RedfishHealthStatus {
 	switch status {
 	case common.OKHealth:
 		return base.RedfishHealthOK
@@ -120,7 +124,11 @@ func convertHealthStatus(status common.Health) base.RedfishHealthStatus {
 	case common.CriticalHealth:
 		return base.RedfishHealthCritical
 	default:
-		return base.RedfishHealthWarning
+		if forceWarning {
+			return base.RedfishHealthWarning
+		}
+
+		return base.RedfishHealthOK
 	}
 }
 
