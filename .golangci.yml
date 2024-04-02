@@ -3,6 +3,10 @@
 run:
   tests: true
 
+issues:
+  exclude-dirs:
+    - pkg/oem/
+
 linters:
   enable-all: true
   disable:
