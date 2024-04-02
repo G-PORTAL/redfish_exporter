@@ -38,6 +38,8 @@ func (m *Metrics) Collect() error {
 	}
 
 	for _, system := range systems {
+		m.vendorSpecifics(system)
+
 		m.WithRedfishHealthMetric(convertHealthStatus(system.Status.Health, false), map[string]string{
 			"system_id": system.ID,
 		})
