@@ -1,9 +1,11 @@
 package metric
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/g-portal/redfish_exporter/pkg/actions"
 	"github.com/g-portal/redfish_exporter/pkg/api"
 	"github.com/g-portal/redfish_exporter/pkg/config"
 	"github.com/gin-gonic/gin"
@@ -26,6 +28,16 @@ func Handle(ctx *gin.Context) {
 			log.Printf("error disconnecting: %v", err)
 		}
 	}()
+
+	// Execute pre actions
+	for _, action := range config.GetConfig().PreActions {
+		if err = actions.Execute(action, client); err != nil {
+			ctx.JSON(http.StatusInternalServerError,
+				gin.H{"error": fmt.Errorf("error executing pre action %q: %w", action, err).Error()})
+
+			return
+		}
+	}
 
 	// Get metrics from the client.
 	registry, err := client.GetMetrics()

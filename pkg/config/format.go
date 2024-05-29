@@ -1,5 +1,7 @@
 package config
 
+type Action string
+
 type Config struct {
 	Verbose bool `yaml:"verbose"`
 
@@ -13,4 +15,6 @@ type Config struct {
 		// Verify Whether to verify the TLS certificate
 		VerifyTLS bool `yaml:"verifyTls"`
 	} `yaml:"redfish"`
+
+	PreActions []Action `yaml:"preActions"`
 }
