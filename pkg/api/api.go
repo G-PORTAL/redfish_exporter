@@ -10,6 +10,7 @@ import (
 type Client interface {
 	Connect(host, username, password string, tlsVerify bool) error
 	GetMetrics() (*prometheus.Registry, error)
+	ResetChassisIntrusion() error
 	Disconnect() error
 }
 

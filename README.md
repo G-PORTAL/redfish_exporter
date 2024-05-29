@@ -31,6 +31,21 @@ docker run -d -p 0.0.0.0:9096:9096 \
 
 Redfish Exporter is providing generic metrics fetched from Redfish endpoints.
 
+## Example request
+
+```bash
+curl http://localhost:9096/metrics?host=https://<ip>
+```
+
+## Pre Actions
+
+This exporter also allows to handle pre actions before fetching metrics. This can be useful to enable metrics on the server
+or handle specific errors before fetching metrics.
+
+Currently the following actions are supported:
+
+- reset_intrusion_alert - Reset intrusion alert on the server
+
 ### Tested with
 * HPE ILO4
 * HPE ILO5

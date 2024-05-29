@@ -8,3 +8,7 @@ redfish:
   verifyTls: true
   username: Administrator
   password: toor
+
+# Actions to perform before collecting metrics
+preActions:
+  - reset_intrusion_alert
