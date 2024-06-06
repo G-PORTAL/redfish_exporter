@@ -1,7 +1,6 @@
 package metric
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -32,10 +31,7 @@ func Handle(ctx *gin.Context) {
 	// Execute pre actions
 	for _, action := range config.GetConfig().PreActions {
 		if err = actions.Execute(action, client); err != nil {
-			ctx.JSON(http.StatusInternalServerError,
-				gin.H{"error": fmt.Errorf("error executing pre action %q: %w", action, err).Error()})
-
-			return
+			log.Printf("error executing pre action %q: %v", action, err)
 		}
 	}
 
