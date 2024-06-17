@@ -36,7 +36,7 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: Build and push
         if: steps.rel.outputs.version != ''
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: true
           tags: gportal/redfish_exporter:latest,gportal/redfish_exporter:${{ steps.rel.outputs.version }}
